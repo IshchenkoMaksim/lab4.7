@@ -12,46 +12,46 @@ Text, должен сохраняться в файле под именем, к�
 же каталоге, что и файл скрипта, если указывать имена файлов без адреса.
 """
 
-from tkinter import Tk, Entry, Button, LEFT, END, Text, Frame
+from tkinter import Tk, Label, Button, END, Text, E, W
+from tkinter import filedialog as fd
 
 
-def open_file(event):
+def open_file():
     text.delete(1.0, END)
+    filename = fd.askopenfilename()
     try:
-        filename = ent.get()
         with open(filename, 'r', encoding="utf-8") as f:
             data = f.read()
         text.insert(1.0, data)
+        lab['text'] = filename
     except FileNotFoundError:
-        text.insert(1.0, 'Вы забыли указать имя файла, '
-                         'или такого файла не существует')
+        text.insert(1.0, 'Вы забыли выбрать файл')
 
 
-def save_file(event):
-    filename = ent.get()
+def save_file():
+    filename = fd.asksaveasfilename(
+        filetypes=(("TXT files", "*.txt"),
+                   ("HTML files", "*.html;*.htm"),
+                   ("All files", "*.*")))
     data = text.get(1.0, END)
     with open(filename, 'w', encoding="utf-8") as f:
         f.write(data)
+    lab['text'] = filename
 
 
 if __name__ == '__main__':
     root = Tk()
 
-    frame = Frame()
-    frame.pack()
+    lab = Label(width=30)
+    lab.grid(row=1, sticky=W)
 
-    ent = Entry(frame, width=30)
-    ent.pack(side=LEFT)
+    b1 = Button(text="Открыть", command=open_file)
+    b1.grid(row=1, sticky=E)
 
-    but1 = Button(frame, text='Открыть', width=8, pady=5)
-    but1.bind('<Button-1>', open_file)
-    but1.pack(side=LEFT)
-
-    but2 = Button(frame, text='Сохранить', width=8, pady=5)
-    but2.bind('<Button-1>', save_file)
-    but2.pack()
+    b2 = Button(text="Сохранить", command=save_file)
+    b2.grid(row=1, column=1, sticky=W)
 
     text = Text(width=70, height=35)
-    text.pack()
+    text.grid(columnspan=2)
 
     root.mainloop()
